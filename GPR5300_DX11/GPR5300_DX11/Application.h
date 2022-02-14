@@ -2,6 +2,7 @@
 #include "D3D.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "SkyboxMaterial.h"
 
 
 class Application
@@ -21,8 +22,11 @@ private:
 	Mesh mCube  = {};
 	Mesh mCube1 = {};
 
+	Mesh mSkySphere = {};
+
 	// Materials
 	Material mMaterial = {};
+	SkyboxMaterial mSkyboxMaterial = {};
 
 	Camera camera = {};
 

@@ -39,6 +39,9 @@
     <ClCompile Include="Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SkyboxMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -68,10 +71,15 @@
     <ClInclude Include="Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SkyboxMaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="DefaultVertexShader.hlsl" />
     <FxCompile Include="DefaultPixelShader.hlsl" />
     <FxCompile Include="LitPixelShader.hlsl" />
+    <FxCompile Include="SkyboxPixelShader.hlsl" />
+    <FxCompile Include="SkyboxVertexShader.hlsl" />
   </ItemGroup>
 </Project>

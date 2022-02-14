@@ -17,6 +17,9 @@ public:
 	void BeginRender() 
 	{ 
 		mD3DevCon->ClearRenderTargetView(mD3RenderTargetView, D3DXCOLOR(1.0f, 0.2f, 0.2f, 1.0f));
+		mD3DevCon->ClearDepthStencilView(mD3DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+			1.0f, 0);
+		mD3DevCon->OMSetDepthStencilState(mD3DepthStencilState, 1);
 	}
 
 	void EndRender() 
@@ -51,10 +54,18 @@ public:
 	}
 
 private:
+	bool CreateRasterizerStates();
+
 	IDXGISwapChain*		 mDxSwapChain			= nullptr;
 	ID3D11Device*		 mD3Device				= nullptr;
 	ID3D11DeviceContext* mD3DevCon				= nullptr;
 	ID3D11RenderTargetView* mD3RenderTargetView = nullptr;
 
+	ID3D11Texture2D*	 mD3DepthStencilTexture = nullptr;
+	ID3D11DepthStencilView* mD3DepthStencilView = nullptr;
+	ID3D11DepthStencilState* mD3DepthStencilState = nullptr;
+
+	ID3D11RasterizerState* mD3SolidRasterizerState = nullptr;
+	ID3D11RasterizerState* mD3WireframeRasterizerState = nullptr;
 };
 

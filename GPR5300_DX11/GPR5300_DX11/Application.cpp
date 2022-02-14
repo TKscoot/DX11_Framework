@@ -15,6 +15,13 @@ bool Application::Initialize(D3D* d3d, Window* window)
     mMaterial.SetTexture(TEXT("red.png"), 1);
     mMaterial.SetTexture(TEXT("perlin.png"), 2);
 
+    mSkyboxMaterial.Initialize(d3d, TEXT("Skybox.dds"), 
+        TEXT("SkyboxVertexShader.hlsl"), TEXT("SkyboxPixelShader.hlsl"));
+
+    mSkySphere.Initialize(d3d, &camera, &mSkyboxMaterial);
+    mSkySphere.GetTransform().SetScale(5.0f, 5.0f, 5.0f);
+    mSkySphere.GetTransform().SetTranslation(camera.GetPosition());
+
     success = camera.Initialize(window);
 
     success = mCube.Initialize(d3d, &camera, &mMaterial);
@@ -31,6 +38,12 @@ bool Application::Initialize(D3D* d3d, Window* window)
 void Application::Finalize()
 {
     mMaterial.Finalize();
+
+    mCube.Finalize();
+    mCube1.Finalize();
+
+    mSkyboxMaterial.Finalize();
+    mSkySphere.Finalize();
 }
 
 void Application::Update(float deltaTime)
@@ -58,6 +71,8 @@ void Application::Render(float deltaTime)
 
     mCube.Draw(deltaTime);
     mCube1.Draw(deltaTime);
+
+    mSkySphere.Draw(deltaTime);
 
     mD3D->EndRender();
 }

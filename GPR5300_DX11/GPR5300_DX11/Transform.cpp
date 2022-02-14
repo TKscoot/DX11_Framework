@@ -12,6 +12,11 @@ void Transform::SetTranslation(FLOAT x, FLOAT y, FLOAT z)
     mTranslation = XMMatrixTranslation(x, y, z);
 }
 
+void Transform::SetTranslation(XMVECTOR pos)
+{
+    mTranslation = XMMatrixTranslationFromVector(pos);
+}
+
 void Transform::SetRotation(FXMVECTOR axis, FLOAT angle)
 {
     mRotation = XMMatrixRotationAxis(axis, XMConvertToRadians(angle));

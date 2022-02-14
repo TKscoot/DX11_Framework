@@ -5,18 +5,15 @@
 class Material
 {
 public:
-	bool Initialize(D3D* d3d, LPCWSTR vertexPath, LPCWSTR pixelPath);
-	bool Initialize(D3D* d3d, LPCWSTR vertexPath, LPCWSTR pixelPath, LPCWSTR texturePath);
-
-	void Finalize();
-
-	void Update(float deltaTime);
-
-	void Draw(float deltaTime);
+	virtual bool Initialize(D3D* d3d, LPCWSTR vertexPath, LPCWSTR pixelPath);
+	virtual bool Initialize(D3D* d3d, LPCWSTR vertexPath, LPCWSTR pixelPath, LPCWSTR texturePath);
+	virtual void Finalize();
+	virtual void Update(float deltaTime);
+	virtual void Draw(float deltaTime);
 
 	bool SetTexture(LPCWSTR path, int slot = 0);
 
-private:
+protected:
 	bool InitializeShader(LPCWSTR vertexPath, LPCWSTR pixelPath);
 
 	D3D* mD3D = nullptr;

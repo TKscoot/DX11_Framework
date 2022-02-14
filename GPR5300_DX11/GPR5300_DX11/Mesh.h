@@ -24,6 +24,8 @@ private:
 
 	void CreateSphere(float diameter, int tesselation);
 
+	bool LoadMesh(LPCSTR filepath);
+
 	Transform mTransform = {};
 
 	Camera* mCamera = nullptr;

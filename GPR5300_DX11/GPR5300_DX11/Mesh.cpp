@@ -1,10 +1,16 @@
 #include "Mesh.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/vector3.h>
+#include <assimp/cimport.h>
+
 bool Mesh::Initialize(D3D* d3d, Camera* camera, Material* material)
 {
     bool success = false;
 
-    CreateSphere(4.0f, 64);
+    CreateSphere(4.0f, 16);
 
     mCamera = camera;
     mMaterial = material;
@@ -189,5 +195,64 @@ void Mesh::CreateSphere(float diameter, int tesselation)
             mIndices.push_back(nextI * stride + nextJ);
         }
     }
+}
+
+bool Mesh::LoadMesh(LPCSTR filepath)
+{
+    mVertices.clear();
+    mIndices.clear();
+
+    unsigned int flags =
+        aiProcess_Triangulate |
+        aiProcess_GenUVCoords |
+        aiProcess_CalcTangentSpace |
+        aiProcess_GenNormals;
+
+    Assimp::Importer importer;
+
+    const aiScene* scene = importer.ReadFile(filepath, flags);
+
+    if (scene == nullptr)
+    {
+        
+        CheckDxError(S_FALSE, importer.GetErrorString());
+        return false;
+    }
+
+    if (!scene->HasMeshes())
+    {
+
+        CheckDxError(S_FALSE, "Scene contains no meshes!");
+        return false;
+    }
+
+    // WICHTIG! Nur erstes Mesh. Kein Support für submeshes/mehrere meshes
+    aiMesh* mesh = scene->mMeshes[0];
+
+    mVertices.resize(mesh->mNumVertices);
+
+    // Setzen der Vertexdaten
+    for (int i = 0; i < mVertices.size(); i++)
+    {
+        mVertices[i].pos = XMFLOAT3(
+            mesh->mVertices[i].x,
+            mesh->mVertices[i].y,
+            mesh->mVertices[i].z);
+
+        mVertices[i].normal = XMFLOAT3(
+            mesh->mNormals[i].x,
+            mesh->mNormals[i].y,
+            mesh->mNormals[i].z);
+
+        mVertices[i].texCoords = XMFLOAT2(
+            mesh->mTextureCoords[0][i].x,
+            mesh->mTextureCoords[0][i].y);
+
+        // TODO: Tangent & Bitangents
+    }
+
+    // TODO: Indices zuweisen
+
+    return true;
 }
 

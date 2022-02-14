@@ -55,8 +55,36 @@ bool D3D::Initialize(HINSTANCE hInstance, Window& window)
     backBufferTexture = nullptr;
 
     // TODO: Depth Stencil View erstellen 
+    D3D11_TEXTURE2D_DESC depthStencilTexureDesc = {};
+    depthStencilTexureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    depthStencilTexureDesc.Width = window.GetWindowWidth();
+    depthStencilTexureDesc.Height = window.GetWindowHeight();
+    depthStencilTexureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthStencilTexureDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthStencilTexureDesc.ArraySize = 1;
+    depthStencilTexureDesc.CPUAccessFlags = 0;
+    depthStencilTexureDesc.MipLevels = 1;
+    depthStencilTexureDesc.SampleDesc.Count = 1;
+    depthStencilTexureDesc.SampleDesc.Quality = 0;
+    depthStencilTexureDesc.MiscFlags = 0;
 
-    mD3DevCon->OMSetRenderTargets(1, &mD3RenderTargetView, nullptr);
+    mD3Device->CreateTexture2D(&depthStencilTexureDesc, nullptr, &mD3DepthStencilTexture);
+    mD3Device->CreateDepthStencilView(mD3DepthStencilTexture, nullptr, &mD3DepthStencilView);
+
+    mD3DevCon->OMSetRenderTargets(1, &mD3RenderTargetView, mD3DepthStencilView);
+
+    D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+    depthStencilDesc.DepthEnable = true;
+    depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+    mD3Device->CreateDepthStencilState(&depthStencilDesc, &mD3DepthStencilState);
+
+    mD3DevCon->OMSetDepthStencilState(mD3DepthStencilState, 1);
+
+    CreateRasterizerStates();
+
+    mD3DevCon->RSSetState(mD3SolidRasterizerState);
 
     // Setting Viewport
     D3D11_VIEWPORT viewport = {};
@@ -110,6 +138,32 @@ bool D3D::CreateTextureAndSampler(LPCWSTR path, ID3D11Device* device, ID3D11Shad
 
     hr = device->CreateSamplerState(&samplerDesc, outSampler);
     success = CheckDxError(hr, "Failed to create Sampler!");
+
+    return success;
+}
+
+bool D3D::CreateRasterizerStates()
+{
+    HRESULT hr;
+    bool success = false;
+
+    D3D11_RASTERIZER_DESC rasterizerDesc = {};
+
+    // Solid & Both faces
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_BACK;
+    rasterizerDesc.FrontCounterClockwise = false;
+    
+    hr = mD3Device->CreateRasterizerState(&rasterizerDesc, &mD3SolidRasterizerState);
+    success = CheckDxError(hr, "Failed to create Solid Rasterizer State!");
+
+    rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+    rasterizerDesc.CullMode = D3D11_CULL_BACK;
+    rasterizerDesc.FrontCounterClockwise = false;
+
+    hr = mD3Device->CreateRasterizerState(&rasterizerDesc, &mD3WireframeRasterizerState);
+    success = CheckDxError(hr, "Failed to create Solid Rasterizer State!");
+
 
     return success;
 }
