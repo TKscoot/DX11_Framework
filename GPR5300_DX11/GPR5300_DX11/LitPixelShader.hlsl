@@ -4,6 +4,8 @@ struct PS_IN
     float2 texCoords : TEXCOORD;
     float3 normal : NORMAL;
     float3 viewDirection : TEXCOORD1;
+    float3 tangent : TANGENT;
+    float3 bitangent : BITANGENT;
 };
 
 struct Light
@@ -46,25 +48,22 @@ float4 PS(PS_IN input) : SV_TARGET
     
     scrolledUV.y += sin(time * 0.00035f) * 0.2;
     
-    float4 albedo = defaultAlbedo;
+    float4 albedo = tex0.Sample(texSampler0, input.texCoords);
+   
+    // Normal Mapping
+    input.normal = normalize(input.normal);
     
-    if (isTextureBound)
-    {
-        float4 color1 = tex0.Sample(texSampler0, input.texCoords);
-        float4 color2 = tex1.Sample(texSampler1, scrolledUV);
-        float4 blendMask = tex2.Sample(texSampler2, scrolledUV);
-        
-        //albedo = lerp(color1, color2, blendMask);
-        
-        albedo = color1;
-    }
+    float3 normal = (tex1.Sample(texSampler1, input.texCoords) * 2) - 1;
+    
+    normal = (normal.x * input.tangent) + (normal.y * input.bitangent) * (normal.z * input.normal);
+    normal = normalize(normal);
     
     // Lambert Term für Diffuse Beleuchtung
-    float lambert = saturate(dot(-light.direction, normalize(input.normal)));
+    float lambert = saturate(dot(light.direction, normalize(normal)));
     float3 diffuse = lambert * (float3) light.diffuse * albedo.rgb * light.intensity;
     
     // Blinn Term für Spekulare Beleuchtung und Reflexe
-    float3 reflectDir = reflect(-light.direction, normalize(input.normal));
+    float3 reflectDir = reflect(-light.direction, normalize(normal));
     float3 specular = pow(saturate(dot(input.viewDirection, reflectDir)), 4.0) 
                       * light.specular.xyz * light.intensity;
 

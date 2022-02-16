@@ -19,8 +19,8 @@ public:
 private:
 
 	// Meshes
-	Mesh mCube  = {};
-	Mesh mCube1 = {};
+	Mesh mMesh1  = {};
+	Mesh mMesh2 = {};
 
 	Mesh mSkySphere = {};
 

@@ -10,9 +10,14 @@
 class D3D
 {
 public:
+
+	enum RasterizerState{CULL_BACK, CULL_FRONT, WIREFRAME};
+
 	bool Initialize(HINSTANCE hInstance, Window& window);
 
 	void Finalize();
+
+	void SetRasterizerState(RasterizerState cullState);
 
 	void BeginRender() 
 	{ 
@@ -67,5 +72,6 @@ private:
 
 	ID3D11RasterizerState* mD3SolidRasterizerState = nullptr;
 	ID3D11RasterizerState* mD3WireframeRasterizerState = nullptr;
+	ID3D11RasterizerState* mD3SkyboxRasterizerState = nullptr;
 };
 

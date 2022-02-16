@@ -10,6 +10,7 @@ class Mesh
 {
 public:
 	bool Initialize(D3D* d3d, Camera* camera, Material* material);
+	bool Initialize(D3D* d3d, LPCSTR filepath, Camera* camera, Material* material);
 
 	void Finalize();
 

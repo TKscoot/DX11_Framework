@@ -92,6 +92,8 @@ bool D3D::Initialize(HINSTANCE hInstance, Window& window)
     viewport.Height = window.GetWindowHeight();
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
 
     mD3DevCon->RSSetViewports(1, &viewport);
 
@@ -116,6 +118,26 @@ void D3D::Finalize()
 
     mDxSwapChain->Release();
     mDxSwapChain = nullptr;
+
+}
+
+void D3D::SetRasterizerState(RasterizerState cullState)
+{
+    switch (cullState)
+    {
+    case D3D::CULL_BACK:
+        mD3DevCon->RSSetState(mD3SolidRasterizerState);
+        break;
+    case D3D::CULL_FRONT:
+        mD3DevCon->RSSetState(mD3SkyboxRasterizerState);
+        break;
+    case D3D::WIREFRAME:
+        mD3DevCon->RSSetState(mD3WireframeRasterizerState);
+        break;
+    default:
+        mD3DevCon->RSSetState(mD3SolidRasterizerState);
+        break;
+    }
 
 }
 
@@ -162,6 +184,13 @@ bool D3D::CreateRasterizerStates()
     rasterizerDesc.FrontCounterClockwise = false;
 
     hr = mD3Device->CreateRasterizerState(&rasterizerDesc, &mD3WireframeRasterizerState);
+    success = CheckDxError(hr, "Failed to create Solid Rasterizer State!");
+
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+    rasterizerDesc.FrontCounterClockwise = true;
+
+    hr = mD3Device->CreateRasterizerState(&rasterizerDesc, &mD3SkyboxRasterizerState);
     success = CheckDxError(hr, "Failed to create Solid Rasterizer State!");
 
 

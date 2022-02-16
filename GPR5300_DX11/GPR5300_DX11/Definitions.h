@@ -32,6 +32,9 @@ struct Vertex
 	XMFLOAT3 pos; // position
 	XMFLOAT2 texCoords; // Texturkoordinaten (UVs)
 	XMFLOAT3 normal;
+	XMFLOAT3 tangent;
+	XMFLOAT3 bitangent;
+	
 };
 
 struct PerMeshConstBuf 

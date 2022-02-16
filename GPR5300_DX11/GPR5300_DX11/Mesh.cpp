@@ -26,6 +26,26 @@ bool Mesh::Initialize(D3D* d3d, Camera* camera, Material* material)
     return success;
 }
 
+bool Mesh::Initialize(D3D* d3d, LPCSTR filepath, Camera* camera, Material* material)
+{
+    bool success = false;
+
+    LoadMesh(filepath);
+
+    mCamera = camera;
+    mMaterial = material;
+
+    mD3D = d3d;
+    mD3Device = mD3D->GetDevice();
+    mD3DevCon = mD3D->GetDevCon();
+
+    success = CreateVertexAndIndexBuffers();
+
+    success = D3D::CreateConstantBuffer<PerMeshConstBuf>(mD3Device, &mD3ConstantBuffer);
+
+    return success;
+}
+
 void Mesh::Finalize()
 {
     mD3ConstantBuffer->Release();
@@ -248,10 +268,36 @@ bool Mesh::LoadMesh(LPCSTR filepath)
             mesh->mTextureCoords[0][i].x,
             mesh->mTextureCoords[0][i].y);
 
+        mVertices[i].tangent = XMFLOAT3(
+            mesh->mTangents[i].x,
+            mesh->mTangents[i].y,
+            mesh->mTangents[i].z);
+
+        mVertices[i].bitangent = XMFLOAT3(
+            mesh->mBitangents[i].x,
+            mesh->mBitangents[i].y,
+            mesh->mBitangents[i].z);
+
         // TODO: Tangent & Bitangents
     }
 
-    // TODO: Indices zuweisen
+    mIndices.resize(mesh->mNumFaces * 3);
+
+    for (int f = 0; f < mesh->mNumFaces; f++)
+    {
+        aiFace* face = &mesh->mFaces[f];
+
+        for (int i = 0; i < face->mNumIndices; i++)
+        {
+            mIndices[((3 * f) + i)] = *(face->mIndices + i);
+        }
+
+        /* Alternative Schreibweise zur For-Loop
+            mIndices[((3 * f) + 1)] = *(face->mIndices + 1);
+            mIndices[((3 * f) + 2)] = *(face->mIndices + 2);
+            mIndices[((3 * f) + 0)] = *(face->mIndices + 0);
+        */
+    }
 
     return true;
 }
